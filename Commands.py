@@ -22,11 +22,16 @@ class Commands:
 
     @staticmethod
     def saturation(saturation):
+        # Ensure percent is within [0, 100] range
+        saturation = max(0, min(100, saturation))
+        saturation = 100 - saturation
         saturation = Commands.percentage_to_hex(saturation)
         return "31 00 00 08 02 {} 00 00 00".format(saturation)
 
     @staticmethod
     def brightness(brightness):
+        # Ensure percent is within [0, 100] range
+        brightness = max(0, min(100, brightness))
         brightness = Commands.percentage_to_hex(brightness)
         return "31 00 00 08 03 {} 00 00 00".format(brightness)
 
@@ -37,7 +42,7 @@ class Commands:
 
     @staticmethod
     def mode_number(mode_number):
-        return "31 00 00 08 06 {} 00 00 00".format(mode_number)
+        return "31 00 00 08 06 {} 00 00 00".format(format(mode_number, '02X'))
 
     @staticmethod
     def mode_speed_decrease():
@@ -65,7 +70,7 @@ class Commands:
 
     @staticmethod
     def wifi_bridge_mode_number(mode_number):
-        return "31 00 00 00 04 {} 00 00 00".format(mode_number)
+        return "31 00 00 00 04 {} 00 00 00".format(format(mode_number, '02X'))
 
     @staticmethod
     def wifi_bridge_mode_speed_decrease():
@@ -86,6 +91,8 @@ class Commands:
 
     @staticmethod
     def wifi_bridge_brightness(brightness):
+        # Ensure percent is within [0, 100] range
+        brightness = max(0, min(100, brightness))
         brightness = Commands.percentage_to_hex(brightness)
         return "31 00 00 00 02 {} 00 00 00".format(brightness)
     
@@ -131,10 +138,6 @@ class Commands:
     
     @staticmethod
     def percentage_to_hex(percent):
-        # Ensure percent is within [0, 100] range
-        percent = max(0, min(100, percent))
-        percent = 100 - percent
-        
         # Convert percentage to hex
         hex_value = int(percent / 100 * 100)
         
