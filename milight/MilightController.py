@@ -3,6 +3,8 @@ import socket
 import threading
 import time
 
+from milight.Zone import Zone
+
 
 class MilightController:
     #! not sure what the v4 port is
@@ -34,7 +36,7 @@ class MilightController:
         def receive():
             while True:
                 data, _ = discoverer.recvfrom(1024)
-                self.handle_message(data)
+                self.__handle_message(data)
 
         discoverer = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         discoverer.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -66,7 +68,7 @@ class MilightController:
         else:
             return None
 
-    def handle_message(self, message: bytes) -> None:
+    def __handle_message(self, message: bytes) -> None:
         data = message.decode("ascii").split(",")
         if len(data) >= 2:
             ip = data[0]
@@ -90,13 +92,13 @@ class MilightController:
             "20 00 00 00 16 02 62 3A D5 ED A3 01 AE 08 2D 46 61 41 A7 F6 DC AF D3 E6 00 00 1E"
         )
         udp_socket.sendto(command, (device.get("ip"), device.get("port")))
-        print("Sent reqest to get session ID:", command.hex())
+        print("Sent reqest to get session ID:", self.__add_spaces_to_hex(command.hex()))
 
         # Receive responses
         while True:
             data, _ = udp_socket.recvfrom(1024)
             response = data.hex()
-            print("Got response: ", response)
+            print("Got response: ", self.__add_spaces_to_hex(response))
 
             # Extract WB1 and WB2 from the response
             wb1 = response[38:40]
@@ -112,22 +114,27 @@ class MilightController:
         return (wb1, wb2)
 
     # UDP Hex Send Format: 80 00 00 00 11 {WifiBridgeSessionID1} {WifiBridgeSessionID2} 00 {SequenceNumber} 00 {COMMAND} {ZONE NUMBER} 00 {Checksum}
-    def send_command(self, device: dict, command: str, zone: str = "00"):
+    def send_command(self, device: dict, command: str, zone: Zone = Zone.ALL) -> str:
         # Create UDP socket
         udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+        # Establish connection and get session ID
         wb1, wb2 = self.establish_session(udp_socket, device)
 
-        command_prefix = "8000000011"
-        sep = "00"
+        # Calculate sequence number
+        self.sequenceNumber = (self.sequenceNumber + 1) % 255
+        sn = "%02X" % self.sequenceNumber
+        
+        # Get zone code (default "00")
+        zone_hex = zone.value
 
-        sn = (self.sequenceNumber + 1) % 255
-        sn = "%02X" % sn
+        # Generate packet
+        packet = "80 00 00 00 11 {} {} 00 {} 00 {} {} 00".format(wb1, wb2, sn, command, zone_hex)
 
-        packet = command_prefix + wb1 + wb2 + sep + sn + sep + command + zone + sep
+        # Calculate packet checksum
+        checksum = self.__calc_checksum(packet.strip(" "))
 
-        checksum = self.calc_checksum(packet)
-
+        # Add checksum to the end of the packet
         packet += checksum
 
         # Convert string to bytes
@@ -135,19 +142,19 @@ class MilightController:
 
         # Send the command
         udp_socket.sendto(command, (device.get("ip"), device.get("port")))
-        print("Sent request:", self.add_spaces_to_hex(command.hex()))
+        print("Sent request:", self.__add_spaces_to_hex(command.hex()))
 
         # Receive response
-        response, addr = udp_socket.recvfrom(1024)
+        response, _ = udp_socket.recvfrom(1024)
         response_hex = response.hex()
-        print("Received response:", self.add_spaces_to_hex(response_hex))
+        print("Received response:", self.__add_spaces_to_hex(response_hex))
 
         # Close the socket
         udp_socket.close()
 
         return response_hex
 
-    def calc_checksum(self, hex_string):
+    def __calc_checksum(self, hex_string: str) -> str:
         if (
             len(hex_string) >= 22
         ):  # Each hex value is 2 characters, so 11 values means 22 characters
@@ -167,7 +174,7 @@ class MilightController:
 
         return hex_string_with_checksum[-2:]
 
-    def add_spaces_to_hex(self, hex_string):
+    def __add_spaces_to_hex(self, hex_string: str) -> str:
         # Using list comprehension to split the string into chunks of 2 characters
         chunks = [hex_string[i : i + 2] for i in range(0, len(hex_string), 2)]
         # Joining the chunks with a space between them

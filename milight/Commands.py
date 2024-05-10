@@ -17,7 +17,7 @@ class Commands:
 
     @staticmethod
     def set_color(color):
-        color = Commands.hex_to_hue(color)
+        color = Commands.__hex_to_hue(color)
         return "31 00 00 08 01 {} {} {} {}".format(color, color, color, color)
 
     @staticmethod
@@ -25,19 +25,19 @@ class Commands:
         # Ensure percent is within [0, 100] range
         saturation = max(0, min(100, saturation))
         saturation = 100 - saturation
-        saturation = Commands.percentage_to_hex(saturation)
+        saturation = Commands.__percentage_to_hex(saturation)
         return "31 00 00 08 02 {} 00 00 00".format(saturation)
 
     @staticmethod
     def brightness(brightness):
         # Ensure percent is within [0, 100] range
         brightness = max(0, min(100, brightness))
-        brightness = Commands.percentage_to_hex(brightness)
+        brightness = Commands.__percentage_to_hex(brightness)
         return "31 00 00 08 03 {} 00 00 00".format(brightness)
 
     @staticmethod
     def kelvin(kelvin):
-        kelvin = Commands.KV_to_hex(kelvin)
+        kelvin = Commands.__KV_to_hex(kelvin)
         return "31 00 00 08 05 {} 00 00 00".format(kelvin)
 
     @staticmethod
@@ -82,7 +82,7 @@ class Commands:
 
     @staticmethod
     def wifi_bridge_set_color(color):
-        color = Commands.hex_to_hue(color)
+        color = Commands.__hex_to_hue(color)
         return "31 00 00 00 01 {} {} {} {}".format(color, color, color, color)
 
     @staticmethod
@@ -93,13 +93,13 @@ class Commands:
     def wifi_bridge_brightness(brightness):
         # Ensure percent is within [0, 100] range
         brightness = max(0, min(100, brightness))
-        brightness = Commands.percentage_to_hex(brightness)
+        brightness = Commands.__percentage_to_hex(brightness)
         return "31 00 00 00 02 {} 00 00 00".format(brightness)
     
     @staticmethod
-    def hex_to_hue(hex_color: str):
+    def __hex_to_hue(hex_color: str):
         # Convert hex color to RGB
-        hex_color = hex_color.strip("#")
+        hex_color = hex_color.strip("#").replace(" ", "")
         red = int(hex_color[0:2], 16)
         green = int(hex_color[2:4], 16)
         blue = int(hex_color[4:6], 16)
@@ -131,13 +131,13 @@ class Commands:
         return format(hue, '02X')
 
     @staticmethod
-    def KV_to_hex(KV):
+    def __KV_to_hex(KV):
         # Convert KV to hex
         hex_value = int((KV - 2700) / (6500 - 2700) * 100)
         return format(hex_value, '02X')
     
     @staticmethod
-    def percentage_to_hex(percent):
+    def __percentage_to_hex(percent):
         # Convert percentage to hex
         hex_value = int(percent / 100 * 100)
         
