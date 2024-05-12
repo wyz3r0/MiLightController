@@ -1,7 +1,7 @@
 import time
 import sys
 sys.path.append('../')
-from milight import MilightController, Commands
+from MilightController import MilightController, Commands
 
 if __name__ == "__main__":
     controller = MilightController({"type": "all"})
