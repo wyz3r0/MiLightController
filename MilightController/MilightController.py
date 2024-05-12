@@ -3,7 +3,7 @@ import socket
 import threading
 import time
 
-from milight.Zone import Zone
+from MilightController.Zone import Zone
 
 
 class MilightController:
