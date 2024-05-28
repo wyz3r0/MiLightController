@@ -4,8 +4,8 @@ sys.path.append('../')
 from MilightController import MilightController, Commands, Zone
 
 if __name__ == "__main__":
-    controller = MilightController({"type": "all"})
-    devices = controller.discover()
+    controller: MilightController = MilightController({"type": "all"})
+    devices: list[dict[str, str]] = controller.discover()
     
     if devices:
         for device in devices:
