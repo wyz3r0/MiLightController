@@ -80,6 +80,53 @@ class MilightController:
         else:
             return None
 
+    def establish_session(self, udp_socket: socket, device: dict) -> tuple[str, str]:
+        '''This function establishes a session with a device using a UDP socket and retrieves the session
+        ID from the response.
+        
+        Parameters
+        ----------
+        udp_socket : socket
+            The `udp_socket` parameter in the `establish_session` method is expected to be a UDP socket
+        object that will be used to send and receive data over the network. It should be an instance of
+        the `socket` class in Python's socket module.
+        device : dict
+            The `device` parameter is a dictionary containing information about the device. It should have
+        the following keys:
+        
+        Returns
+        -------
+            The function `establish_session` is returning a tuple containing two strings, which are the
+        values of `wb1` and `wb2` extracted from the response received after sending a command to get
+        the Wifi Bridge Session ID.
+        
+        '''
+        # Send command to get Wifi Bridge Session ID
+        command = bytes.fromhex(
+            "20 00 00 00 16 02 62 3A D5 ED A3 01 AE 08 2D 46 61 41 A7 F6 DC AF D3 E6 00 00 1E"
+        )
+        udp_socket.sendto(command, (device.get("ip"), device.get("port")))
+        print("Sent reqest to get session ID:", self.__add_spaces_to_hex(command.hex()))
+
+        # Receive responses
+        while True:
+            data, _ = udp_socket.recvfrom(1024)
+            response = data.hex()
+            print("Got response: ", self.__add_spaces_to_hex(response))
+
+            # Extract WB1 and WB2 from the response
+            wb1 = response[38:40]
+            wb2 = response[40:42]
+            print("WB1:", wb1)
+            print("WB2:", wb2)
+
+            # Break the loop after receiving all responses
+            if len(data) < 28:
+                break
+
+        # Return session ID
+        return (wb1, wb2)
+
     # UDP Hex Send Format: 80 00 00 00 11 {WifiBridgeSessionID1} {WifiBridgeSessionID2} 00 {SequenceNumber} 00 {COMMAND} {ZONE NUMBER} 00 {Checksum}
     def send_command(self, device: dict, command: str, zone: Zone = Zone.ALL) -> str:
         '''The function `send_command` sends a command to a device using UDP socket communication and
