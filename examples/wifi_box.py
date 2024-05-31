@@ -4,8 +4,8 @@ sys.path.append('../')
 from MilightController import MilightController, Commands
 
 if __name__ == "__main__":
-    controller = MilightController({"type": "all"})
-    devices = controller.discover()
+    controller: MilightController = MilightController()
+    devices: list[dict[str, str]] = controller.discover()
     
     if devices:
         for device in devices:
@@ -18,6 +18,8 @@ if __name__ == "__main__":
             controller.send_command(device, Commands.wifi_bridge_set_color("#af00ff"))
             time.sleep(1)
             controller.send_command(device, Commands.wifi_bridge_set_color("17 70 13"))
+            time.sleep(1)
+            controller.send_command(device, Commands.wifi_bridge_set_color_to_white())
             time.sleep(1)
             controller.send_command(device, Commands.wifi_bridge_mode_number(1))
             time.sleep(1)

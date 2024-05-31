@@ -1,16 +1,18 @@
 # MiLight / LimitlessLED controller
 
-A Python api to find MiLight wifi-bridges and controll the LED lighting system.
+A Python api to find MiLight wifi-bridges and controll the LED lighting system using v6 protocol.
 
 ## Description
 
 MiLightController is a python module providing ways to interact with MiLight / LimitlessLED lights via their wifi-bridge.
 It allows you to a.i.:
+
 * set color of 4 different zones and the wifi-bridge inbuild light
 * change brightness and saturation
 * set the warmth of the white light on supported devices
 
 ## Authors
+
 Dobrosław Dębicki ([@wyz3r0](https://github.com/wyz3r0))
 
 ## Acknowledgments

@@ -4,8 +4,8 @@ sys.path.append('../')
 from MilightController import MilightController, Commands, Zone
 
 if __name__ == "__main__":
-    controller = MilightController({"type": "all"})
-    devices = controller.discover()
+    controller: MilightController = MilightController()
+    devices: list[dict[str, str]] = controller.discover()
     
     if devices:
         for device in devices:
@@ -29,7 +29,7 @@ if __name__ == "__main__":
             time.sleep(1)
             controller.send_command(device, Commands.saturation(100))
             time.sleep(1)
-            controller.send_command(device, Commands.set_color_to_white())
+            controller.send_command(device, Commands.white_light_on())
             time.sleep(1)
             controller.send_command(device, Commands.brightness(20))
             time.sleep(1)
