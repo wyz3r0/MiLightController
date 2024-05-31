@@ -7,28 +7,15 @@ from MilightController.Zone import Zone
 
 
 class MilightController:
-    #! not sure what the v4 port is
-    __PORT_v4: int = 8899
     __PORT_v6: int = 5987
 
-    def __init__(self, options: dict[str, str]) -> None:
-        self.options: dict[str, str] = options or {"type": "all"}
-        self.port: int = self.options.get("port", 48899)
-        self.host: str = self.options.get("address", "255.255.255.255")
-        self.timeout: int = self.options.get("timeout", 3000)
-        self.discover_legacy: str = (
-            not self.options.get("type")
-            or self.options.get("type") == "all"
-            or self.options.get("type") == "legacy"
-        )
-        self.discover_v6: str = (
-            self.options.get("type") == "all" or self.options.get("type") == "v6"
-        )
-        self.discovery_message_legacy: bytes = b"\x4C\x69\x6E\x6B\x5F\x57\x69\x2D\x46\x69"
+    def __init__(self, port: int = 48899, address: str = "255.255.255.255", timeout: int = 3000) -> None:
+        self.port: int = port
+        self.host: str = address
+        self.timeout: int = timeout
         self.discovery_message_v6: bytes = (
-            b"\x48\x46\x2D\x41\x31\x31\x41\x53\x53\x49\x53\x54\x48\x52\x45\x41\x44"
+            b"\x48\x46\x2D\x41\x31\x31\x41\x53\x53\x49\x53\x54\x48\x52\x45\x41\x44" 
         )
-        # self.timeout_id = None
         self.disco_results: list[dict[str, str]] = []
         self.sequenceNumber: int = 0
 
@@ -46,15 +33,11 @@ class MilightController:
         threading.Thread(target=receive, daemon=True).start()
 
         try:
-            discoverer_attempts: int = 10
+            discoverer_attempts: int = 3
             print(f"Sending discover request {discoverer_attempts} times")
+            
             for _ in range(discoverer_attempts):
-                if self.discover_legacy:
-                    discoverer.sendto(
-                        self.discovery_message_legacy, (self.host, self.port)
-                    )
-                if self.discover_v6:
-                    discoverer.sendto(self.discovery_message_v6, (self.host, self.port))
+                discoverer.sendto(self.discovery_message_v6, (self.host, self.port))
                 time.sleep(0.2)
 
             time.sleep(self.timeout / 1000)
