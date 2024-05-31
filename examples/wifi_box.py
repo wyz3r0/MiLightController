@@ -19,6 +19,8 @@ if __name__ == "__main__":
             time.sleep(1)
             controller.send_command(device, Commands.wifi_bridge_set_color("17 70 13"))
             time.sleep(1)
+            controller.send_command(device, Commands.wifi_bridge_set_color_to_white())
+            time.sleep(1)
             controller.send_command(device, Commands.wifi_bridge_mode_number(1))
             time.sleep(1)
             controller.send_command(device, Commands.wifi_bridge_mode_number(2))
