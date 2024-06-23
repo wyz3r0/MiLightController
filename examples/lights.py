@@ -1,6 +1,4 @@
 import time
-import sys
-sys.path.append('../')
 from MilightController import MilightController, Commands, Zone
 
 if __name__ == "__main__":

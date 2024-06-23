@@ -67,6 +67,8 @@ class MilightController:
             
             for _ in range(discoverer_attempts):
                 discoverer.sendto(self.discovery_message_v6, (self.host, self.port))
+                if self.disco_results:
+                    break
                 time.sleep(0.2)
 
             time.sleep(self.timeout / 1000)
