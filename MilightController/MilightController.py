@@ -39,7 +39,7 @@ class MilightController:
         self.disco_results: list[dict[str, str]] = []
         self.sequenceNumber: int = 0
 
-    def discover(self) -> list[dict[str, str]]:
+    def discover(self, discoverer_attempts: int = 3) -> list[dict[str, str]]:
         '''The `discover` function in the provided Python code sends a discover request multiple times,
         receives responses asynchronously, and returns a list of discovered devices.
         
@@ -62,7 +62,6 @@ class MilightController:
         threading.Thread(target=receive, daemon=True).start()
 
         try:
-            discoverer_attempts: int = 3
             print(f"Sending discover request {discoverer_attempts} times")
             
             for _ in range(discoverer_attempts):

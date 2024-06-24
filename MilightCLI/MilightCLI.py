@@ -6,13 +6,15 @@ def hex_color(color: str) -> str:
         return color
     raise ArgumentTypeError("Value must be 6 symbol hex code")
 
-def percentage(percent: int) -> int:
-    if percent in range(0, 101):
+def percentage(percent: str) -> int:
+    percent = int(percent)
+    if 0 <= percent <= 100:
         return percent
     raise ArgumentTypeError("Value must be between 0 nad 100")
 
-def kelvin(kv: int) -> int:
-    if kv in range(2700, 6501):
+def kelvin(kv: str) -> int:
+    kv = int(kv)
+    if 2700 <= kv <= 6500:
         return kv
     raise ArgumentTypeError("Value must be between 2700 nad 6500")
 
@@ -47,7 +49,7 @@ def main() -> None:
     # make sure command is passed when --bridge or --zone selected
     if (args.bridge or args.zone) and not (
         args.on or args.off or args.color or args.nightlight or args.brightness or
-        args.saturation or args.temp or args.mode or args.modeup or args.modedown
+        args.saturation or args.temperature or args.mode or args.modeup or args.modedown
     ):
         parser.error("When -b/--bridge or -z/--zone is selected, one of the command options must be specified: [-on | -off | -c COLOR | -nl | -br BRIGHTNESS | -s SATURATION | -t TEMP | -m {1,2,3,4,5} | -mu | -md]")
 
