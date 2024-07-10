@@ -1,6 +1,6 @@
 # MiLight / LimitlessLED controller
 
-A Python api to find MiLight wifi-bridges and controll the LED lighting system using v6 protocol.
+A Python API with buildin CLI for controlling MiLight / LimitlessLED
 
 ## Description
 
